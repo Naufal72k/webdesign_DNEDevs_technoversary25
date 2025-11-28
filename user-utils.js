@@ -19,7 +19,7 @@ const KEYS = {
 const TRASH_IMAGES = [
     "https://images.unsplash.com/photo-1530587191325-3db32d826c18?q=80&w=600&auto=format&fit=crop", 
     "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?q=80&w=600&auto=format&fit=crop", 
-    "https://images.unsplash.com/photo-1523293836945-3f9f872849de?q=80&w=600&auto=format&fit=crop", 
+    "https://images.pexels.com/photos/2583836/pexels-photo-2583836.jpeg", 
     "https://images.unsplash.com/photo-1605600659908-0ef719419d41?q=80&w=600&auto=format&fit=crop", 
     "https://images.unsplash.com/photo-1621451537084-482c73073a0f?q=80&w=600&auto=format&fit=crop", 
     "https://images.unsplash.com/photo-1595278069441-2cf29f8005a4?q=80&w=600&auto=format&fit=crop", 
