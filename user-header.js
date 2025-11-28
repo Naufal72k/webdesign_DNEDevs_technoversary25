@@ -1,11 +1,9 @@
 /**
- * CleanTrack User Header Component (RESPONSIVE SIDEBAR EDITION)
+ * CleanTrack User Header Component (NEXT-GEN EDITION)
  * File: user-header.js
  * Fitur:
- * 1. Navbar Desktop Horizontal.
- * 2. Sidebar Drawer (Off-canvas) untuk Mobile & Tablet.
- * 3. Profil & Saldo di dalam Sidebar.
- * 4. [UPDATE] Tombol Logout di Desktop.
+ * - Desktop: Floating Glass Bar + Logout Button.
+ * - Mobile: Full Screen Dark Glass Overlay + Tombol Close 'X'.
  */
 
 function renderHeader(activePage) {
@@ -16,135 +14,154 @@ function renderHeader(activePage) {
         return;
     }
 
-    // 2. Style Config
-    // Desktop Styles
-    const dActive = "text-sm font-bold text-primary border-b-2 border-primary py-5"; 
-    const dInactive = "text-sm font-medium text-gray-500 hover:text-primary transition-colors py-5 border-b-2 border-transparent";
-    
-    // Mobile/Sidebar Styles
-    const mActive = "flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary rounded-xl font-bold transition-colors";
-    const mInactive = "flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium transition-colors";
+    // --- CONFIGURATION STYLES ---
 
-    // Link Logic
+    // Desktop: Active (Glowing Dot Indicator)
+    const dActive = "relative text-sm font-bold text-slate-900 transition-colors after:content-[''] after:absolute after:-bottom-3 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:bg-primary after:rounded-full after:shadow-[0_0_10px_rgba(42,98,200,0.8)]";
+    // Desktop: Inactive
+    const dInactive = "relative text-sm font-medium text-slate-500 hover:text-primary transition-colors";
+
+    // Mobile: Menu Item Style (Large & Bold)
+    const mItemClass = "group flex items-center gap-6 p-4 rounded-2xl transition-all duration-300 hover:bg-white/10";
+    const mActiveText = "text-white font-black text-2xl tracking-tight";
+    const mInactiveText = "text-slate-400 group-hover:text-white font-bold text-2xl tracking-tight";
+    const mIconActive = "text-primary bg-white/10 p-3 rounded-full shadow-[0_0_15px_rgba(42,98,200,0.5)]";
+    const mIconInactive = "text-slate-500 group-hover:text-primary p-3 rounded-full border border-white/5 group-hover:border-white/20";
+
+    // Link Data
     const links = [
         { id: 'reports', href: 'MyWasteReports.html', icon: 'description', text: 'Laporan Saya' },
-        { id: 'map', href: 'MapView.html', icon: 'map', text: 'Peta Persebaran' },
+        { id: 'map', href: 'MapView.html', icon: 'map', text: 'Peta Jelajah' },
         { id: 'new', href: 'ReportNew.html', icon: 'add_a_photo', text: 'Buat Laporan' },
-        { id: 'profile', href: 'UserProfile.html', icon: 'account_balance_wallet', text: 'Dompet & Profil' }
+        { id: 'profile', href: 'UserProfile.html', icon: 'account_circle', text: 'Profil & Akun' },
+        { id: 'notifications', href: 'Notifications.html', icon: 'notifications', text: 'Notifikasi' }
     ];
 
-    // Build Nav Links
-    const desktopNav = links.map(l => 
+    // Build Desktop Nav
+    const desktopNav = links.filter(l => l.id !== 'notifications').map(l => 
         `<a href="${l.href}" class="${activePage === l.id ? dActive : dInactive}">${l.text}</a>`
     ).join('');
 
-    const mobileNav = links.map(l => 
-        `<a href="${l.href}" class="${activePage === l.id ? mActive : mInactive}">
-            <span class="material-symbols-outlined text-xl">${l.icon}</span>
-            ${l.text}
-        </a>`
-    ).join('');
+    // Build Mobile Nav (Full Screen List)
+    const mobileNav = links.map(l => {
+        const isActive = activePage === l.id;
+        return `
+        <a href="${l.href}" class="${mItemClass}">
+            <div class="${isActive ? mIconActive : mIconInactive}">
+                <span class="material-symbols-outlined text-3xl">${l.icon}</span>
+            </div>
+            <span class="${isActive ? mActiveText : mInactiveText}">${l.text}</span>
+            ${isActive ? '<span class="ml-auto w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_rgba(42,98,200,1)] animate-pulse"></span>' : ''}
+        </a>`;
+    }).join('');
 
-    // 3. HTML Template
+    // --- HTML STRUCTURE ---
     const headerHTML = `
-    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm transition-all">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16 sm:h-20">
-                
-                <div class="flex items-center gap-3 sm:gap-6">
-                    <button onclick="toggleSidebar()" class="lg:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20">
-                        <span class="material-symbols-outlined text-2xl sm:text-3xl">menu</span>
-                    </button>
-
-                    <a href="MyWasteReports.html" class="flex items-center gap-2 group">
-                        <div class="bg-primary/10 p-2 rounded-lg group-hover:bg-primary/20 transition-colors">
-                            <span class="material-symbols-outlined text-primary text-2xl">recycling</span>
+    <!-- FLOATING NAVBAR (Desktop & Mobile Trigger) -->
+    <div class="fixed top-4 left-4 right-4 z-40 transition-all duration-300">
+        <header class="bg-white/80 backdrop-blur-xl border border-white/40 rounded-2xl shadow-lg shadow-slate-200/50">
+            <div class="px-4 sm:px-6">
+                <div class="flex items-center justify-between h-16 md:h-20">
+                    
+                    <!-- LEFT: LOGO -->
+                    <a href="MyWasteReports.html" class="flex items-center gap-3 group">
+                        <div class="relative w-10 h-10 flex items-center justify-center bg-white rounded-xl shadow-md border border-slate-100 group-hover:scale-105 transition-transform">
+                            <span class="material-symbols-outlined text-2xl text-primary drop-shadow-[0_2px_4px_rgba(42,98,200,0.3)]">recycling</span>
                         </div>
                         <div class="flex flex-col">
-                            <span class="text-lg sm:text-xl font-bold tracking-tight text-gray-900 leading-none">CleanTrack</span>
-                            <span class="text-[10px] font-bold text-primary uppercase tracking-widest hidden sm:block">Warga</span>
+                            <span class="text-xl font-black tracking-tighter text-slate-900 leading-none group-hover:text-primary transition-colors">CleanTrack</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden sm:block">Smart City App</span>
                         </div>
                     </a>
-                </div>
 
-                <nav class="hidden lg:flex gap-8">
-                    ${desktopNav}
-                </nav>
+                    <!-- CENTER: DESKTOP NAV -->
+                    <nav class="hidden lg:flex items-center gap-8 bg-slate-50/50 px-8 py-2.5 rounded-full border border-slate-100/50">
+                        ${desktopNav}
+                    </nav>
 
-                <div class="flex items-center gap-2 sm:gap-4">
-                    
-                    <a href="Notifications.html" class="relative flex items-center justify-center rounded-full size-10 text-gray-500 hover:bg-gray-100 hover:text-primary transition-colors ${activePage === 'notifications' ? 'bg-gray-100 text-primary' : ''}">
-                        <span class="material-symbols-outlined text-2xl">notifications</span>
-                        <span id="header-notif-dot" class="hidden absolute top-2.5 right-3 size-2 bg-red-500 rounded-full ring-2 ring-white animate-pulse"></span>
-                    </a>
+                    <!-- RIGHT: PROFILE (Desktop) & TOGGLE (Mobile) -->
+                    <div class="flex items-center gap-3">
+                        
+                        <!-- Desktop Actions -->
+                        <div class="hidden lg:flex items-center gap-4">
+                            <a href="Notifications.html" class="relative w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-slate-50 border border-slate-100 shadow-sm transition-all hover:text-primary group">
+                                <span class="material-symbols-outlined text-xl text-slate-500 group-hover:text-primary">notifications</span>
+                                <span id="header-notif-dot" class="hidden absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white animate-pulse"></span>
+                            </a>
+                            
+                            <div class="h-8 w-px bg-slate-200"></div>
 
-                    <div class="hidden lg:flex items-center gap-3 pl-4 border-l border-gray-200">
-                    <button onclick="confirmLogoutUser()" class="ml-2 flex items-center justify-center size-10 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 border border-red-100 transition-all" title="Keluar">
-                            <span class="material-symbols-outlined text-xl">logout</span>
+                            <!-- Profile Pill -->
+                            <div class="flex items-center gap-3 cursor-pointer group" onclick="window.location.href='UserProfile.html'">
+                                <div class="text-right">
+                                    <p class="text-xs font-bold text-slate-900 leading-none" id="header-name">${currentUser.name}</p>
+                                    <p class="text-[10px] text-primary font-mono mt-0.5 font-bold" id="header-points">${currentUser.points} Pts</p>
+                                </div>
+                                <div class="relative">
+                                    <img id="header-avatar" src="${currentUser.avatar}" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md group-hover:ring-2 ring-primary/20 transition-all">
+                                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
+                                </div>
+                            </div>
+
+                            <!-- NEW: DESKTOP LOGOUT BUTTON -->
+                            <button onclick="logoutUser()" class="w-10 h-10 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-100 shadow-sm ml-2" title="Keluar">
+                                <span class="material-symbols-outlined text-xl">logout</span>
+                            </button>
+                        </div>
+
+                        <!-- Mobile Toggle Button -->
+                        <button onclick="toggleMobileMenu()" class="lg:hidden relative w-12 h-12 flex items-center justify-center rounded-xl bg-slate-900 text-white shadow-lg shadow-slate-900/20 active:scale-90 transition-all z-50">
+                            <span class="material-symbols-outlined text-2xl" id="menu-icon">menu</span>
                         </button>
-                        <div class="text-right hidden xl:block cursor-pointer" onclick="window.location.href='UserProfile.html'">
-                            <p class="text-sm font-bold text-gray-900 leading-none" id="header-name">${currentUser.name}</p>
-                            <p class="text-xs text-gray-500 font-mono mt-1" id="header-points">${currentUser.points} Pts</p>
-                        </div>
-                        <img id="header-avatar" src="${currentUser.avatar}" class="size-10 rounded-full bg-gray-100 object-cover border border-gray-200 cursor-pointer" onclick="window.location.href='UserProfile.html'">
-                        
-                        
+
                     </div>
-
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
+    </div>
 
-    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 hidden transition-opacity opacity-0"></div>
+    <!-- PADDING FOR FIXED HEADER -->
+    <div class="h-24 md:h-32"></div>
 
-    <aside id="sidebar-panel" class="fixed top-0 left-0 bottom-0 w-[280px] bg-white z-[60] shadow-2xl transform -translate-x-full transition-transform duration-300 ease-out flex flex-col h-full lg:hidden">
+    <!-- FULL SCREEN MOBILE OVERLAY (Dark Glass) -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 z-[45] bg-slate-900/95 backdrop-blur-xl opacity-0 pointer-events-none transition-all duration-500 flex flex-col justify-center">
         
-        <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-            <div class="flex items-center gap-2">
-                <div class="bg-primary p-1.5 rounded-lg">
-                    <span class="material-symbols-outlined text-white text-xl">recycling</span>
-                </div>
-                <span class="font-bold text-gray-900 text-lg">CleanTrack</span>
-            </div>
-            <button onclick="toggleSidebar()" class="p-1 rounded-full hover:bg-gray-200 text-gray-500 transition-colors">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-        </div>
+        <!-- Background Blobs Decoration -->
+        <div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary/20 rounded-full blur-[100px] pointer-events-none"></div>
 
-        <div class="p-6 bg-gradient-to-br from-primary/5 to-secondary/5 border-b border-gray-100">
-            <div class="flex items-center gap-4 mb-4">
-                <img id="mobile-avatar" src="${currentUser.avatar}" class="size-14 rounded-full bg-white p-1 border border-gray-200 object-cover shadow-sm">
+        <!-- NEW: CLOSE BUTTON 'X' (MOBILE) -->
+        <button onclick="toggleMobileMenu()" class="absolute top-6 right-6 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all z-[60] backdrop-blur-md border border-white/10">
+            <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+
+        <div class="container mx-auto px-6 relative z-10 h-full flex flex-col">
+            
+            <!-- User Info (Top of Overlay) -->
+            <div class="mt-24 mb-8 flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md">
+                <img id="overlay-avatar" src="${currentUser.avatar}" class="w-14 h-14 rounded-full border-2 border-white/20">
                 <div>
-                    <p class="font-bold text-gray-900 text-lg leading-tight line-clamp-1" id="mobile-name">${currentUser.name}</p>
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 text-[10px] font-bold uppercase tracking-wide border border-yellow-200 mt-1">
-                        Warga Aktif
-                    </span>
+                    <p class="text-white font-bold text-lg" id="overlay-name">${currentUser.name}</p>
+                    <p class="text-primary font-mono font-bold text-sm" id="overlay-points">${currentUser.points} Pts</p>
                 </div>
             </div>
-            <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center">
-                <div>
-                    <p class="text-xs text-gray-400 font-bold uppercase">Saldo Poin</p>
-                    <p class="text-xl font-black text-gray-900 font-mono tracking-tight" id="mobile-points">${currentUser.points}</p>
-                </div>
-                <button onclick="window.location.href='UserProfile.html'" class="size-8 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary-dark transition-colors shadow-lg shadow-primary/30">
-                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+
+            <!-- Navigation Links -->
+            <nav class="flex-1 space-y-2 overflow-y-auto custom-scroll">
+                ${mobileNav}
+            </nav>
+
+            <!-- Bottom Action -->
+            <div class="py-8 mt-4 border-t border-white/10">
+                <button onclick="logoutUser()" class="w-full flex items-center justify-center gap-3 p-4 rounded-xl bg-red-500/10 text-red-400 font-bold border border-red-500/20 hover:bg-red-500 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">logout</span>
+                    Keluar Aplikasi
                 </button>
+                <p class="text-center text-white/20 text-xs mt-6 font-mono">CleanTrack v3.0 &bull; By @naufal</p>
             </div>
-        </div>
 
-        <div class="flex-1 overflow-y-auto p-4 space-y-1">
-            ${mobileNav}
         </div>
-
-        <div class="p-4 border-t border-gray-100 bg-gray-50">
-            <button onclick="confirmLogoutUser()" class="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-white border border-gray-200 text-red-600 font-bold hover:bg-red-50 hover:border-red-200 transition-all shadow-sm">
-                <span class="material-symbols-outlined">logout</span>
-                Keluar Aplikasi
-            </button>
-            <p class="text-center text-[10px] text-gray-400 mt-4 font-medium">v2.5.0 &bull; CleanTrack Mobile</p>
-        </div>
-    </aside>
+    </div>
     `;
 
     const target = document.getElementById('app-header');
@@ -158,31 +175,24 @@ function renderHeader(activePage) {
     }
 }
 
-// --- GLOBAL TOGGLE FUNCTION ---
-window.toggleSidebar = function() {
-    const backdrop = document.getElementById('sidebar-backdrop');
-    const panel = document.getElementById('sidebar-panel');
+// --- LOGIC ---
+
+window.toggleMobileMenu = function() {
+    const overlay = document.getElementById('mobile-menu-overlay');
+    const icon = document.getElementById('menu-icon');
     const body = document.body;
 
-    if (panel.classList.contains('-translate-x-full')) {
-        // Open
-        backdrop.classList.remove('hidden');
-        setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
-        panel.classList.remove('-translate-x-full');
+    if (overlay.classList.contains('opacity-0')) {
+        // OPEN
+        overlay.classList.remove('opacity-0', 'pointer-events-none');
+        // Ikon menu utama bisa berubah atau tetap, karena kita sudah punya tombol X terpisah
+        // icon.innerText = 'close'; 
         body.style.overflow = 'hidden'; // Lock Scroll
     } else {
-        // Close
-        backdrop.classList.add('opacity-0');
-        panel.classList.add('-translate-x-full');
+        // CLOSE
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+        icon.innerText = 'menu';
         body.style.overflow = ''; // Unlock Scroll
-        setTimeout(() => backdrop.classList.add('hidden'), 300);
-    }
-}
-
-// --- LOGOUT CONFIRMATION ---
-window.confirmLogoutUser = function() {
-    if(confirm("Apakah Anda yakin ingin keluar?")) {
-        logoutUser(); // Memanggil fungsi dari user-utils.js
     }
 }
 
@@ -190,21 +200,26 @@ function updateHeaderVisuals() {
     const updatedSession = getActiveSession();
     if (!updatedSession) return;
 
-    // Desktop
-    const nameEl = document.getElementById('header-name');
-    const pointsEl = document.getElementById('header-points');
-    const avatarEl = document.getElementById('header-avatar');
-    if (nameEl) nameEl.textContent = updatedSession.name;
-    if (pointsEl) pointsEl.textContent = updatedSession.points + ' Pts';
-    if (avatarEl) avatarEl.src = updatedSession.avatar;
+    const ids = {
+        name: ['header-name', 'overlay-name'],
+        points: ['header-points', 'overlay-points'],
+        avatar: ['header-avatar', 'overlay-avatar']
+    };
 
-    // Mobile Sidebar
-    const mName = document.getElementById('mobile-name');
-    const mPoints = document.getElementById('mobile-points');
-    const mAvatar = document.getElementById('mobile-avatar');
-    if (mName) mName.textContent = updatedSession.name;
-    if (mPoints) mPoints.textContent = updatedSession.points;
-    if (mAvatar) mAvatar.src = updatedSession.avatar;
+    ids.name.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.textContent = updatedSession.name;
+    });
+    
+    ids.points.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.textContent = updatedSession.points + ' Pts';
+    });
+
+    ids.avatar.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.src = updatedSession.avatar;
+    });
 }
 
 function checkSmartNotification() {

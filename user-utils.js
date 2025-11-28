@@ -1,17 +1,15 @@
 /**
- * CleanTrack Core Utilities (UPDATED)
+ * CleanTrack Core Utilities (VERSION 11 - FORCE SYNC)
  * File: user-utils.js
- * * UPDATE LOG:
- * - FIXED: Trash Images replaced with stable HD Unsplash URLs (No more broken images).
- * - UPDATE: Data initialization flag updated to force refresh.
  */
 
 const KEYS = {
-    REPORTS: 'shared_reports',      // Data Laporan
-    USERS: 'shared_users',          // Data User
-    TRANSACTIONS: 'shared_tx',      // Riwayat Transaksi
-    CURRENT_SESSION: 'active_session', // User Login
-    INIT_FLAG: 'cleanTrack_v8_hd_images' // Flag baru untuk memaksa reset data gambar
+    REPORTS: 'shared_reports',
+    USERS: 'shared_users',
+    TRANSACTIONS: 'shared_tx',
+    REWARDS: 'shared_rewards', 
+    CURRENT_SESSION: 'active_session',
+    INIT_FLAG: 'cleanTrack_v11_force_sync' // GANTI KE V11 UTK PAKSA MUNCUL DATA
 };
 
 // ==========================================
