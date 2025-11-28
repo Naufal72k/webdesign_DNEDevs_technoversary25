@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap"
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
@@ -29,7 +30,8 @@
                         "surface": "#ffffff",
                     },
                     fontFamily: {
-                        "display": ["Public Sans", "sans-serif"]
+                        "display": ["Public Sans", "sans-serif"],
+                        "mono": ["Space Grotesk", "monospace"]
                     }
                 }
             }
@@ -56,10 +58,26 @@
             -ms-overflow-style: none;
         }
 
-        /* Pattern untuk Mini Map Statis */
-        .bg-map-pattern {
-            background-color: #e5e7eb;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239ca3af' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        /* Gradient Border Utility */
+        .gradient-border-mask {
+            position: relative;
+            background: #fff;
+            background-clip: padding-box;
+            border: 2px solid transparent;
+            border-radius: 1.5rem;
+        }
+
+        .gradient-border-mask::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: -1;
+            margin: -2px;
+            border-radius: inherit;
+            background: linear-gradient(to right, #2A62C8, #50E3C2);
         }
     </style>
 </head>
@@ -72,233 +90,196 @@
 
         <div class="flex flex-col lg:flex-row gap-8 items-start">
 
-            <aside class="w-full lg:w-72 flex-shrink-0 lg:sticky lg:top-24 space-y-6" data-aos="fade-right">
+            <!-- SIDEBAR PROFILE (STICKY) -->
+            <aside class="w-full lg:w-80 flex-shrink-0 lg:sticky lg:top-28 space-y-6" data-aos="fade-right">
 
+                <!-- Profile Card -->
                 <div
-                    class="bg-surface p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
-                    <div
-                        class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-4 -mt-4 group-hover:bg-primary/10 transition-colors">
+                    class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 relative overflow-hidden group">
+                    <!-- Background Decoration -->
+                    <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-primary/10 to-secondary/10">
                     </div>
-                    <div class="relative z-10">
-                        <h2 class="text-lg font-bold mb-1 flex items-center gap-2">
-                            Halo, <span id="sidebar-name" class="truncate max-w-[120px]">User</span>! 👋
-                        </h2>
-                        <div class="flex items-center gap-2 mt-3">
+
+                    <div class="relative z-10 flex flex-col items-center text-center mt-4">
+                        <div class="p-1 rounded-full bg-white shadow-sm mb-3">
+                            <img id="sidebar-avatar" src=""
+                                class="w-20 h-20 rounded-full object-cover border-4 border-slate-50">
+                        </div>
+                        <h2 class="text-xl font-black text-slate-900 leading-tight mb-1" id="sidebar-name">User</h2>
+                        <div class="flex items-center gap-2 mt-1">
                             <span
-                                class="px-2 py-0.5 rounded bg-blue-50 text-primary text-xs font-bold border border-blue-100"
-                                id="level-current">Warga Aktif</span>
-                            <span class="text-xs text-slate-400 font-mono"><span id="sidebar-points"
-                                    class="text-slate-900 font-bold">0</span> Pts</span>
+                                class="px-3 py-1 rounded-full bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider"
+                                id="level-current">Warga</span>
+                            <span class="text-sm font-mono font-bold text-primary" id="sidebar-points">0 Pts</span>
+                        </div>
+                    </div>
+
+                    <div
+                        class="mt-6 pt-6 border-t border-slate-100 grid grid-cols-3 gap-2 text-center divide-x divide-slate-100">
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase">Total</p>
+                            <p class="text-lg font-black text-slate-900" id="stat-total">0</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase">Proses</p>
+                            <p class="text-lg font-black text-blue-600" id="stat-progress">0</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase">Selesai</p>
+                            <p class="text-lg font-black text-green-600" id="stat-resolved">0</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-surface p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-slate-900 mb-4 text-xs uppercase tracking-wider flex items-center gap-2">
-                        <span class="material-symbols-outlined text-sm">bar_chart</span> Statistik Laporan
-                    </h3>
+                <!-- Create Button (Mobile/Tablet Only Context) -->
+                <a href="ReportNew.html"
+                    class="block w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-center shadow-lg hover:bg-primary transition-all active:scale-95 flex items-center justify-center gap-2 lg:hidden">
+                    <span class="material-symbols-outlined">add_a_photo</span> Buat Laporan Baru
+                </a>
 
-                    <div class="space-y-2">
-                        <div
-                            class="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-50 transition-colors">
-                            <div class="flex items-center gap-3">
-                                <div
-                                    class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
-                                    <span class="material-symbols-outlined text-lg">folder</span>
-                                </div>
-                                <span class="text-sm font-medium text-slate-600">Total</span>
-                            </div>
-                            <span class="font-black text-slate-800" id="stat-total">0</span>
-                        </div>
-
-                        <div
-                            class="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-50 transition-colors">
-                            <div class="flex items-center gap-3">
-                                <div
-                                    class="w-8 h-8 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-600">
-                                    <span class="material-symbols-outlined text-lg">hourglass_top</span>
-                                </div>
-                                <span class="text-sm font-medium text-slate-600">Menunggu</span>
-                            </div>
-                            <span class="font-black text-slate-800" id="stat-pending">0</span>
-                        </div>
-
-                        <div
-                            class="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-50 transition-colors">
-                            <div class="flex items-center gap-3">
-                                <div
-                                    class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                                    <span class="material-symbols-outlined text-lg">engineering</span>
-                                </div>
-                                <span class="text-sm font-medium text-slate-600">Diproses</span>
-                            </div>
-                            <span class="font-black text-slate-800" id="stat-progress">0</span>
-                        </div>
-
-                        <div
-                            class="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-50 transition-colors">
-                            <div class="flex items-center gap-3">
-                                <div
-                                    class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center text-green-600">
-                                    <span class="material-symbols-outlined text-lg">check_circle</span>
-                                </div>
-                                <span class="text-sm font-medium text-slate-600">Selesai</span>
-                            </div>
-                            <span class="font-black text-slate-800" id="stat-resolved">0</span>
-                        </div>
-
-                        <div
-                            class="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-50 transition-colors">
-                            <div class="flex items-center gap-3">
-                                <div
-                                    class="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-red-600">
-                                    <span class="material-symbols-outlined text-lg">cancel</span>
-                                </div>
-                                <span class="text-sm font-medium text-slate-600">Ditolak</span>
-                            </div>
-                            <span class="font-black text-red-600" id="stat-rejected">0</span>
-                        </div>
-                    </div>
-                </div>
             </aside>
 
+            <!-- MAIN FEED -->
             <div class="flex-1 w-full min-w-0" data-aos="fade-up">
 
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                     <div>
-                        <h1 class="text-2xl font-black tracking-tight text-slate-900">Monitor Kebersihan</h1>
-                        <p class="text-sm text-slate-500">Pantau laporan Anda dan situasi lingkungan sekitar.</p>
+                        <h1 class="text-3xl font-black tracking-tight text-slate-900">Feed Lingkungan</h1>
+                        <p class="text-slate-500 font-medium">Update terkini kondisi kebersihan di sekitar Anda.</p>
                     </div>
+
+                    <!-- Create Button (Desktop) -->
                     <a href="ReportNew.html"
-                        class="flex items-center gap-2 bg-slate-900 hover:bg-primary text-white px-5 py-2.5 rounded-xl font-bold shadow-lg transition-all hover:-translate-y-0.5 active:translate-y-0">
+                        class="hidden lg:flex items-center gap-2 bg-slate-900 hover:bg-primary text-white px-6 py-3 rounded-2xl font-bold shadow-xl shadow-primary/20 transition-all hover:-translate-y-1 active:translate-y-0">
                         <span class="material-symbols-outlined text-xl">add_a_photo</span>
                         <span>Lapor Baru</span>
                     </a>
                 </div>
 
-                <div class="flex border-b border-slate-200 mb-6 gap-8">
+                <!-- TABS -->
+                <div class="bg-white p-1.5 rounded-2xl border border-slate-200 inline-flex mb-8 shadow-sm">
                     <button onclick="switchViewMode('MINE')" id="tab-main-mine"
-                        class="pb-3 text-sm font-bold border-b-2 border-primary text-primary transition-colors flex items-center gap-2">
-                        <span class="material-symbols-outlined text-lg">person</span> Laporan Saya
+                        class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all text-white bg-slate-900 shadow-md">
+                        Laporan Saya
                     </button>
                     <button onclick="switchViewMode('PUBLIC')" id="tab-main-public"
-                        class="pb-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-colors flex items-center gap-2">
-                        <span class="material-symbols-outlined text-lg">public</span> Jelajah Warga
+                        class="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all">
+                        Jelajah Warga
                     </button>
                 </div>
 
-                <div class="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide" id="filter-container">
+                <!-- FILTERS -->
+                <div class="flex flex-wrap gap-2 mb-8" id="filter-container">
                     <button onclick="filterReports('All')" id="btn-all"
-                        class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-slate-800 text-white shadow-md">
-                        Semua
-                    </button>
+                        class="px-4 py-2 rounded-full text-xs font-bold border transition-all bg-white border-slate-200 text-slate-600 hover:border-slate-300">Semua</button>
                     <button onclick="filterReports('Pending')" id="btn-pending"
-                        class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300">
-                        Menunggu
-                    </button>
+                        class="px-4 py-2 rounded-full text-xs font-bold border transition-all bg-white border-slate-200 text-slate-600 hover:border-slate-300">Menunggu</button>
                     <button onclick="filterReports('In Progress')" id="btn-in-progress"
-                        class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300">
-                        Diproses
-                    </button>
+                        class="px-4 py-2 rounded-full text-xs font-bold border transition-all bg-white border-slate-200 text-slate-600 hover:border-slate-300">Diproses</button>
                     <button onclick="filterReports('Resolved')" id="btn-resolved"
-                        class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300">
-                        Selesai
-                    </button>
+                        class="px-4 py-2 rounded-full text-xs font-bold border transition-all bg-white border-slate-200 text-slate-600 hover:border-slate-300">Selesai</button>
                     <button onclick="filterReports('Rejected')" id="btn-rejected"
-                        class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-white border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300">
-                        Ditolak
-                    </button>
+                        class="px-4 py-2 rounded-full text-xs font-bold border transition-all bg-white border-slate-200 text-slate-600 hover:border-slate-300">Ditolak</button>
                 </div>
 
-                <div id="reports-list" class="grid grid-cols-1 gap-6"></div>
+                <!-- FEED LIST -->
+                <div id="reports-list" class="space-y-8"></div>
 
-                <div id="empty-state"
-                    class="hidden flex flex-col items-center justify-center py-16 px-4 bg-white rounded-2xl border border-dashed border-slate-300 text-center">
-                    <div class="bg-slate-50 p-6 rounded-full mb-4">
-                        <span class="material-symbols-outlined text-6xl text-slate-300">folder_off</span>
+                <!-- EMPTY STATE -->
+                <div id="empty-state" class="hidden py-20 text-center">
+                    <div
+                        class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                        <span class="material-symbols-outlined text-4xl text-slate-300">search_off</span>
                     </div>
-                    <h3 class="text-lg font-bold text-slate-800 mb-1">Belum ada data</h3>
-                    <p class="text-slate-500 text-sm max-w-sm mx-auto">Tidak ada laporan yang sesuai dengan filter ini.
-                    </p>
+                    <h3 class="text-xl font-bold text-slate-900">Belum ada laporan</h3>
+                    <p class="text-slate-500">Jadilah yang pertama melapor untuk area ini.</p>
                 </div>
 
             </div>
         </div>
     </main>
 
+    <!-- MAP MODAL -->
     <div id="map-modal" class="fixed inset-0 z-[100] hidden">
-        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onclick="closeMapModal()">
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-md transition-opacity" onclick="closeMapModal()">
         </div>
         <div
-            class="absolute inset-4 md:inset-10 bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-pop-up">
-
-            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-white z-10">
+            class="absolute inset-4 md:inset-10 bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col transform transition-all scale-100">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white z-10">
                 <div>
                     <h3 class="font-bold text-slate-900 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">map</span> Lokasi Kejadian
+                        <span class="material-symbols-outlined text-primary">map</span> Peta Detail
                     </h3>
-                    <p class="text-xs text-slate-500" id="modal-map-address">...</p>
+                    <p class="text-xs text-slate-500 font-mono" id="modal-map-address">...</p>
                 </div>
                 <button onclick="closeMapModal()"
-                    class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">
+                    class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 hover:bg-slate-100 text-slate-600 transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-
             <div class="flex-1 relative bg-slate-100">
                 <div id="full-map" class="w-full h-full z-0"></div>
             </div>
-
         </div>
     </div>
 
-    <div id="rating-modal" class="fixed inset-0 z-[100] hidden">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" id="rating-backdrop"></div>
-        <div class="absolute inset-0 flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 transform scale-95 opacity-0 transition-all duration-300"
-                id="rating-content">
-                <div class="text-center">
-                    <h3 class="text-xl font-bold text-slate-900 mb-2">Beri Ulasan</h3>
-                    <div class="flex justify-center gap-2 mb-4">
-                        <button class="star-btn text-slate-300 text-4xl" data-value="1">★</button>
-                        <button class="star-btn text-slate-300 text-4xl" data-value="2">★</button>
-                        <button class="star-btn text-slate-300 text-4xl" data-value="3">★</button>
-                        <button class="star-btn text-slate-300 text-4xl" data-value="4">★</button>
-                        <button class="star-btn text-slate-300 text-4xl" data-value="5">★</button>
-                    </div>
-                    <textarea id="rating-comment" rows="3"
-                        class="w-full p-3 rounded-xl border border-slate-200 text-sm mb-4"
-                        placeholder="Tulis ulasan..."></textarea>
+    <!-- RATING MODAL -->
+    <div id="rating-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeRatingModal()"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 relative z-10 transform scale-95 transition-all duration-300"
+            id="rating-content">
+            <div class="text-center">
+                <div
+                    class="w-16 h-16 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-4 text-yellow-500">
+                    <span class="material-symbols-outlined text-3xl">star</span>
+                </div>
+                <h3 class="text-xl font-black text-slate-900 mb-2">Beri Penilaian</h3>
+                <p class="text-sm text-slate-500 mb-6">Seberapa puas Anda dengan penanganan laporan ini?</p>
+
+                <div class="flex justify-center gap-2 mb-6">
+                    <button class="star-btn text-slate-200 hover:text-yellow-400 transition-colors text-4xl"
+                        data-value="1">★</button>
+                    <button class="star-btn text-slate-200 hover:text-yellow-400 transition-colors text-4xl"
+                        data-value="2">★</button>
+                    <button class="star-btn text-slate-200 hover:text-yellow-400 transition-colors text-4xl"
+                        data-value="3">★</button>
+                    <button class="star-btn text-slate-200 hover:text-yellow-400 transition-colors text-4xl"
+                        data-value="4">★</button>
+                    <button class="star-btn text-slate-200 hover:text-yellow-400 transition-colors text-4xl"
+                        data-value="5">★</button>
+                </div>
+
+                <textarea id="rating-comment" rows="3"
+                    class="w-full p-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-primary text-sm mb-4 font-medium"
+                    placeholder="Tulis ulasan singkat (opsional)..."></textarea>
+
+                <div class="flex gap-2">
+                    <button onclick="closeRatingModal()"
+                        class="flex-1 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-50">Batal</button>
                     <button onclick="submitRating()"
-                        class="w-full bg-primary text-white font-bold py-3 rounded-xl">Kirim</button>
-                    <button onclick="closeRatingModal()" class="mt-3 text-slate-400 text-sm">Batal</button>
+                        class="flex-1 py-3 rounded-xl bg-slate-900 text-white font-bold hover:bg-primary shadow-lg">Kirim</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // INIT AOS
         AOS.init();
 
-        // --- STATE ---
         let currentUser = null;
         let activeData = [];
         let viewMode = 'MINE';
         let currentFilterStatus = 'All';
         let ratingTargetId = null;
         let selectedStars = 0;
-        let mapInstance = null; // Leaflet instance for modal
+        let mapInstance = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             currentUser = requireLogin();
             renderHeader('reports');
-            loadData(); // Load awal
-
-            // Listener Sinkronisasi
+            loadData();
             window.addEventListener('storageUpdated', loadData);
 
-            // Star Logic
             document.querySelectorAll('.star-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     selectedStars = parseInt(e.target.dataset.value);
@@ -307,138 +288,72 @@
             });
         });
 
-        // --- 1. CORE DATA LOGIC ---
-
+        // --- DATA LOGIC ---
         function loadData() {
             const allReports = getSharedReports();
-
-            // A. FILTER LOGIC (MINE vs PUBLIC)
             if (viewMode === 'MINE') {
-                // Laporan Saya: Ambil semua milik user
                 activeData = allReports.filter(r => r.userId === currentUser.id);
             } else {
-                // Jelajah Warga:
-                // 1. Exclude punya sendiri
-                // 2. Status hanya Resolved atau Rejected (Sembunyikan Pending/Process orang lain)
-                activeData = allReports.filter(r =>
-                    r.userId !== currentUser.id &&
-                    (r.status === 'Resolved' || r.status === 'Rejected')
-                );
+                activeData = allReports.filter(r => r.userId !== currentUser.id && (r.status === 'Resolved' || r.status === 'Rejected'));
             }
-
-            // B. UPDATE SIDEBAR STATS (Berdasarkan Laporan Saya)
-            const myStats = allReports.filter(r => r.userId === currentUser.id);
-            updateSidebar(myStats);
-
-            // C. RENDER
+            updateSidebar(allReports.filter(r => r.userId === currentUser.id));
             filterReports(currentFilterStatus);
         }
 
         function switchViewMode(mode) {
             viewMode = mode;
-            // Update Tab UI
             const btnMine = document.getElementById('tab-main-mine');
             const btnPublic = document.getElementById('tab-main-public');
 
             if (mode === 'MINE') {
-                btnMine.className = "pb-3 text-sm font-bold border-b-2 border-primary text-primary transition-colors flex items-center gap-2";
-                btnPublic.className = "pb-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-colors flex items-center gap-2";
-                // Tampilkan semua tombol filter di mode Mine
+                btnMine.className = "px-6 py-2.5 rounded-xl text-sm font-bold transition-all text-white bg-slate-900 shadow-md";
+                btnPublic.className = "px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all";
                 document.getElementById('filter-container').classList.remove('hidden');
             } else {
-                btnPublic.className = "pb-3 text-sm font-bold border-b-2 border-primary text-primary transition-colors flex items-center gap-2";
-                btnMine.className = "pb-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-colors flex items-center gap-2";
-                // Di mode Public, filter bisa disederhanakan atau di-reset ke All
+                btnPublic.className = "px-6 py-2.5 rounded-xl text-sm font-bold transition-all text-white bg-slate-900 shadow-md";
+                btnMine.className = "px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all";
                 filterReports('All');
             }
             loadData();
         }
 
         function updateSidebar(myReports) {
-            // Update Poin & Nama
             const allUsers = getSharedUsers();
             const freshUser = allUsers.find(u => u.id === currentUser.id) || currentUser;
-            document.getElementById('sidebar-name').textContent = freshUser.name.split(' ')[0];
-            document.getElementById('sidebar-points').textContent = freshUser.points || 0;
 
-            // Hitung Statistik (5 Item)
-            const total = myReports.length;
-            const pending = myReports.filter(r => r.status === 'Pending').length;
-            const progress = myReports.filter(r => r.status === 'In Progress').length;
-            const resolved = myReports.filter(r => r.status === 'Resolved').length;
-            const rejected = myReports.filter(r => r.status === 'Rejected').length;
+            document.getElementById('sidebar-name').textContent = freshUser.name;
+            document.getElementById('sidebar-points').textContent = (freshUser.points || 0) + " Pts";
+            document.getElementById('sidebar-avatar').src = freshUser.avatar;
 
-            document.getElementById('stat-total').textContent = total;
-            document.getElementById('stat-pending').textContent = pending;
-            document.getElementById('stat-progress').textContent = progress;
-            document.getElementById('stat-resolved').textContent = resolved;
-            document.getElementById('stat-rejected').textContent = rejected;
+            document.getElementById('stat-total').textContent = myReports.length;
+            document.getElementById('stat-progress').textContent = myReports.filter(r => r.status === 'In Progress').length;
+            document.getElementById('stat-resolved').textContent = myReports.filter(r => r.status === 'Resolved').length;
         }
 
         function filterReports(status) {
             currentFilterStatus = status;
             updateFilterButtonsUI(status);
-
             const filtered = status === 'All' ? activeData : activeData.filter(r => r.status === status);
             renderList(filtered);
         }
 
         function updateFilterButtonsUI(activeStatus) {
             const statuses = ['All', 'Pending', 'In Progress', 'Resolved', 'Rejected'];
-
             statuses.forEach(st => {
-                const btnId = `btn-${st.toLowerCase().replace(' ', '-')}`;
-                const btn = document.getElementById(btnId);
+                const btn = document.getElementById(`btn-${st.toLowerCase().replace(' ', '-')}`);
                 if (!btn) return;
 
-                // Reset Class
-                btn.className = "px-4 py-2 rounded-full text-xs font-bold transition-all border shadow-sm ";
-
-                // === ACTIVE STATE ===
                 if (st === activeStatus) {
-                    if (st === 'Rejected') {
-                        // Aktif tapi merah → sesuai permintaanmu
-                        btn.classList.add(
-                            'bg-red-600',
-                            'text-white',
-                            'border-red-600',
-                            'shadow-red-300'
-                        );
-                    } else {
-                        // Semua active lain (All, Pending, In Progress, Resolved) → biru
-                        btn.classList.add(
-                            'bg-blue-600',
-                            'text-white',
-                            'border-blue-600',
-                            'shadow-blue-300'
-                        );
-                    }
-                }
-
-                // === INACTIVE STATE ===
-                else {
-                    if (st === 'Rejected') {
-                        // Rejected non-aktif tetap putih + teks merah
-                        btn.classList.add(
-                            'bg-white',
-                            'text-red-600',
-                            'border-red-200',
-                            'hover:bg-red-50'
-                        );
-                    } else {
-                        btn.classList.add(
-                            'bg-white',
-                            'text-slate-600',
-                            'border-slate-200',
-                            'hover:bg-slate-50'
-                        );
-                    }
+                    btn.classList.add('bg-primary', 'text-white', 'border-primary');
+                    btn.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+                } else {
+                    btn.classList.remove('bg-primary', 'text-white', 'border-primary');
+                    btn.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
                 }
             });
         }
 
-        // --- 2. RENDER CARD (SPLIT LAYOUT) ---
-
+        // --- RENDER FEED CARDS (AESTHETIC STYLE) ---
         function renderList(reports) {
             const container = document.getElementById('reports-list');
             const emptyState = document.getElementById('empty-state');
@@ -454,221 +369,187 @@
 
             reports.forEach(report => {
                 const isOwner = report.userId === currentUser.id;
-                const statusStyle = getStatusConfig(report.status);
+                const statusData = getStatusData(report.status);
 
-                // --- Logic Konten Tambahan ---
-                let feedbackHTML = '';
-                // Jika Rejected -> Tampilkan Alasan Merah
-                if (report.status === 'Rejected' && report.adminNotes) {
-                    feedbackHTML = `
-                        <div class="mt-auto pt-3">
-                            <div class="p-2.5 rounded-xl bg-red-50 border border-red-100 text-xs text-red-800 flex items-start gap-2">
-                                <span class="material-symbols-outlined text-sm mt-0.5">info</span> 
-                                <div>
-                                    <span class="font-bold block text-[10px] uppercase text-red-400">Alasan Penolakan</span>
-                                    ${report.adminNotes}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-                // Jika Resolved & Ada Review
-                else if (report.status === 'Resolved' && report.reviewContent) {
-                    feedbackHTML = `
-                        <div class="mt-auto pt-3">
-                            <div class="p-2.5 rounded-xl bg-yellow-50 border border-yellow-100 text-xs text-yellow-800 flex items-start gap-2">
-                                <span class="material-symbols-outlined text-sm mt-0.5 text-yellow-600">star</span>
-                                <div>
-                                    <span class="font-bold block text-[10px] uppercase text-yellow-500">Ulasan Anda</span>
-                                    "${report.reviewContent}"
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
+                // Get Avatar from shared users to ensure up-to-date picture
+                const allUsers = getSharedUsers();
+                const author = allUsers.find(u => u.id === report.userId);
+                const avatarUrl = author ? author.avatar : `https://ui-avatars.com/api/?name=${report.reporterName}`;
 
-                // Tombol Rating
+                // Action Button Logic
                 let actionBtn = '';
                 if (isOwner && report.status === 'Resolved' && !report.rating) {
                     actionBtn = `
-                        <button onclick="openRatingModal('${report.id}')" class="ml-auto shrink-0 bg-yellow-400 hover:bg-yellow-500 text-white w-8 h-8 flex items-center justify-center rounded-full shadow-md transition-transform hover:scale-110" title="Beri Rating">
-                            <span class="material-symbols-outlined text-base">star</span>
-                        </button>
-                    `;
+                        <button onclick="openRatingModal('${report.id}')" class="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-white text-xs font-bold rounded-full shadow-lg shadow-yellow-200 transition-transform hover:scale-105 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">star</span> Beri Nilai
+                        </button>`;
                 }
 
-                // UPDATE: Hapus Teks Kategori & Tambah Visual Peta (Mini Map)
-                // Gambar peta statis sederhana menggunakan placeholder untuk ilustrasi
-                const mapPlaceholder = `https://placehold.co/400x300/e2e8f0/94a3b8?text=Map+Location`;
+                // Feedback Content
+                let feedbackHTML = '';
+                if (report.status === 'Rejected' && report.adminNotes) {
+                    feedbackHTML = `
+                        <div class="mt-4 p-4 rounded-2xl bg-red-50 border border-red-100 flex items-start gap-3">
+                            <span class="material-symbols-outlined text-red-500 mt-0.5">error</span>
+                            <div>
+                                <p class="text-xs font-bold text-red-800 uppercase mb-1">Laporan Ditolak</p>
+                                <p class="text-sm text-red-600 leading-snug">"${report.adminNotes}"</p>
+                            </div>
+                        </div>`;
+                } else if (report.status === 'Resolved' && report.reviewContent) {
+                    const stars = '★'.repeat(report.rating);
+                    feedbackHTML = `
+                        <div class="mt-4 p-4 rounded-2xl bg-yellow-50 border border-yellow-100 flex items-start gap-3">
+                            <span class="material-symbols-outlined text-yellow-600 mt-0.5">star</span>
+                            <div>
+                                <p class="text-xs font-bold text-yellow-800 uppercase mb-1">Ulasan Anda <span class="text-yellow-500 ml-1">${stars}</span></p>
+                                <p class="text-sm text-yellow-700 leading-snug italic">"${report.reviewContent}"</p>
+                            </div>
+                        </div>`;
+                }
 
-                const cardHTML = `
-                    <div class="bg-white rounded-[2rem] border border-slate-100 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.05)] hover:shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] transition-all duration-300 overflow-hidden group" data-aos="fade-in" data-aos-duration="600">
+                // HTML TEMPLATE
+                const html = `
+                <div class="bg-white rounded-[2.5rem] p-5 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] border border-slate-100 relative overflow-hidden group transition-all hover:shadow-[0_20px_50px_-12px_rgba(42,98,200,0.1)]" data-aos="fade-up">
+                    
+                    <!-- Header -->
+                    <div class="flex items-center justify-between mb-5 px-1">
+                        <div class="flex items-center gap-3">
+                            <div class="p-0.5 bg-gradient-to-tr from-primary to-secondary rounded-full">
+                                <div class="bg-white p-0.5 rounded-full">
+                                    <img src="${avatarUrl}" class="w-10 h-10 rounded-full object-cover">
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm leading-tight">${report.reporterName}</h4>
+                                <p class="text-[10px] text-slate-400 font-mono mt-0.5">${report.date} • #${report.id}</p>
+                            </div>
+                        </div>
+                        ${actionBtn}
+                    </div>
+
+                    <!-- Visual Grid (Desktop: Split, Mobile: Stack) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
                         
-                        <div class="flex flex-col md:flex-row h-full">
+                        <!-- Main Photo (2 Cols) -->
+                        <div class="md:col-span-2 relative h-64 md:h-72 rounded-[2rem] overflow-hidden group-image shadow-inner bg-slate-100">
+                            <img src="${report.photos[0]}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
                             
-                            <div class="flex-1 flex flex-col sm:flex-row gap-5 p-2">
+                            <!-- Glass Badge -->
+                            <div class="absolute top-4 left-4">
+                                <div class="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 shadow-lg flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full ${statusData.dotColor} animate-pulse"></span>
+                                    <span class="text-xs font-black text-white tracking-wide uppercase drop-shadow-md">${report.status}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Map Integration (1 Col) - Gradient Border -->
+                        <div class="relative h-32 md:h-72 rounded-[2rem] p-[2px] bg-gradient-to-br from-primary via-secondary to-blue-300 shadow-sm cursor-pointer hover:scale-[1.02] transition-transform" onclick="openMapModal('${report.id}', '${report.location.replace(/'/g, "\\'")}')">
+                            <div class="w-full h-full bg-white rounded-[calc(2rem-2px)] overflow-hidden relative">
+                                <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=400&fit=crop" class="w-full h-full object-cover opacity-60 hover:opacity-80 transition-opacity">
                                 
-                                <div class="relative shrink-0 w-full sm:w-32 sm:h-32 rounded-2xl overflow-hidden shadow-inner group-image">
-                                    <img src="${report.photos[0]}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Bukti">
-                                    
-                                    <div class="absolute top-2 left-2 z-10">
-                                        <div class="px-2.5 py-1 rounded-lg backdrop-blur-md bg-white/90 shadow-sm border border-white/40">
-                                            <span class="text-[10px] font-black uppercase tracking-wider ${statusStyle.textClass || 'text-slate-800'} flex items-center gap-1">
-                                                ${getStatusIcon(report.status)} 
-                                                ${report.status}
-                                            </span>
-                                        </div>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-10 h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center shadow-lg text-primary animate-bounce">
+                                        <span class="material-symbols-outlined text-2xl">location_on</span>
                                     </div>
                                 </div>
-
-                                <!-- UPDATE: Menambahkan Gambar Mini Map di Samping Foto -->
-                                <div class="hidden sm:block relative shrink-0 w-32 h-32 rounded-2xl overflow-hidden shadow-inner border border-slate-100 bg-map-pattern group/map cursor-pointer" onclick="openMapModal('${report.id}', '${report.location.replace(/'/g, "\\'")}')">
-                                     <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                        <span class="material-symbols-outlined text-2xl text-red-500 drop-shadow-md">location_on</span>
-                                     </div>
-                                     <div class="absolute inset-0 bg-slate-900/0 hover:bg-slate-900/10 transition-colors flex items-end justify-center pb-2">
-                                        <span class="text-[10px] font-bold bg-white/80 px-2 py-0.5 rounded text-slate-700 backdrop-blur-sm">Lihat Peta</span>
-                                     </div>
-                                </div>
-
-                                <div class="flex-1 p-1 flex flex-col justify-center">
-                                    <div class="flex justify-between items-start mb-1 gap-2">
-                                        <div>
-                                            <!-- UPDATE: Hapus Teks Kategori, ganti dengan Tanggal/Judul Deskripsi -->
-                                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5 block">${report.date}</span>
-                                            <h3 class="font-bold text-slate-900 text-lg leading-tight line-clamp-1 group-hover:text-primary transition-colors">${report.description.substring(0, 40)}${report.description.length > 40 ? '...' : ''}</h3>
-                                        </div>
-                                        ${actionBtn}
-                                    </div>
-                                    
-                                    <p class="text-xs text-slate-500 font-mono mb-2 flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-[14px]">location_on</span> ${report.location}
-                                    </p>
-                                    
-                                    ${feedbackHTML}
+                                
+                                <div class="absolute bottom-0 left-0 right-0 p-3 bg-white/90 backdrop-blur text-center border-t border-slate-100">
+                                    <p class="text-[10px] font-bold text-slate-600 truncate">${report.location}</p>
+                                    <p class="text-[9px] text-primary font-bold mt-0.5">Tap untuk Peta Detail</p>
                                 </div>
                             </div>
-
-                            <!-- Mobile Only Map Button (Visible only on small screens) -->
-                            <div class="sm:hidden relative h-12 bg-slate-50 border-t border-slate-100 flex items-center justify-center cursor-pointer hover:bg-slate-100 transition-colors" onclick="openMapModal('${report.id}', '${report.location.replace(/'/g, "\\'")}')">
-                                <span class="text-xs font-bold text-primary flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-sm">map</span> Lihat Lokasi di Peta
-                                </span>
-                            </div>
-
                         </div>
                     </div>
-                `;
-                container.insertAdjacentHTML('beforeend', cardHTML);
+
+                    <!-- Content -->
+                    <div class="px-2">
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            <span class="font-bold text-slate-900 mr-1">Laporan:</span> 
+                            ${report.description}
+                        </p>
+                        ${feedbackHTML}
+                    </div>
+
+                </div>`;
+
+                container.insertAdjacentHTML('beforeend', html);
             });
         }
 
-        // Helper kecil untuk icon status (opsional, jika belum ada bisa dihapus bagian ${getStatusIcon})
-        function getStatusIcon(status) {
-            if (status === 'Pending') return '<span class="w-1.5 h-1.5 rounded-full bg-yellow-500 inline-block"></span>';
-            if (status === 'In Progress') return '<span class="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block"></span>';
-            if (status === 'Resolved') return '<span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>';
-            if (status === 'Rejected') return '<span class="w-1.5 h-1.5 rounded-full bg-red-500 inline-block"></span>';
-            return '';
+        function getStatusData(status) {
+            if (status === 'Resolved') return { dotColor: 'bg-green-400' };
+            if (status === 'In Progress') return { dotColor: 'bg-blue-400' };
+            if (status === 'Rejected') return { dotColor: 'bg-red-500' };
+            return { dotColor: 'bg-yellow-400' };
         }
-        // --- 3. MAP MODAL LOGIC (LEAFLET INTEGRATION) ---
 
+        // --- MAP MODAL ---
         function openMapModal(id, locationStr) {
             const modal = document.getElementById('map-modal');
             document.getElementById('modal-map-address').textContent = locationStr;
             modal.classList.remove('hidden');
 
-            // Hancurkan map lama jika ada agar tidak memory leak
             if (mapInstance) {
                 mapInstance.remove();
                 mapInstance = null;
             }
 
-            // Generate Koordinat Stabil dari String Lokasi (Simulasi)
             const coords = generateCoordinates(locationStr);
-
-            // Init Map Baru (Delay sedikit agar container render dulu)
             setTimeout(() => {
                 mapInstance = L.map('full-map').setView(coords, 16);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap'
-                }).addTo(mapInstance);
-
-                L.marker(coords).addTo(mapInstance)
-                    .bindPopup(`<b class="font-sans text-sm">${locationStr}</b>`).openPopup();
-
-                // Force resize agar tile muncul sempurna
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(mapInstance);
+                L.marker(coords).addTo(mapInstance).bindPopup(`<b class="font-sans text-sm">${locationStr}</b>`).openPopup();
                 mapInstance.invalidateSize();
             }, 100);
         }
 
-        function closeMapModal() {
-            document.getElementById('map-modal').classList.add('hidden');
-        }
+        function closeMapModal() { document.getElementById('map-modal').classList.add('hidden'); }
 
-        // Helper: Generate Consistent Coords (Sama seperti di MapView & AdminMap)
         function generateCoordinates(str) {
             let hash = 0;
-            const DEFAULT_CENTER = [-8.5833, 116.1167]; // Mataram
-            for (let i = 0; i < str.length; i++) {
-                hash = ((hash << 5) - hash) + str.charCodeAt(i);
-                hash |= 0;
-            }
-            // Spread randomly (approx 3-5km radius)
+            const DEFAULT_CENTER = [-8.5833, 116.1167];
+            for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i);
             const offsetLat = (hash % 1000) / 25000;
             const offsetLng = ((hash * 2) % 1000) / 25000;
             return [DEFAULT_CENTER[0] + offsetLat, DEFAULT_CENTER[1] + offsetLng];
         }
 
-
-        // --- 4. RATING LOGIC (EXISTING) ---
+        // --- RATING ---
         function openRatingModal(id) {
             ratingTargetId = id;
             selectedStars = 0;
             updateStarUI(0);
             document.getElementById('rating-comment').value = "";
             const modal = document.getElementById('rating-modal');
-            const backdrop = document.getElementById('rating-backdrop');
-            const content = document.getElementById('rating-content');
-
             modal.classList.remove('hidden');
-            setTimeout(() => {
-                backdrop.classList.remove('opacity-0');
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 50);
+            setTimeout(() => document.getElementById('rating-content').classList.remove('scale-95'), 10);
         }
 
         function closeRatingModal() {
             const modal = document.getElementById('rating-modal');
-            document.getElementById('rating-backdrop').classList.add('opacity-0');
-            document.getElementById('rating-content').classList.remove('scale-100', 'opacity-100');
-            document.getElementById('rating-content').classList.add('scale-95', 'opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 300);
+            document.getElementById('rating-content').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 200);
         }
 
         function updateStarUI(rating) {
             document.querySelectorAll('.star-btn').forEach(btn => {
                 const val = parseInt(btn.dataset.value);
                 if (val <= rating) {
-                    btn.classList.remove('text-slate-300');
-                    btn.classList.add('text-yellow-400');
+                    btn.classList.remove('text-slate-200'); btn.classList.add('text-yellow-400');
                 } else {
-                    btn.classList.add('text-slate-300');
-                    btn.classList.remove('text-yellow-400');
+                    btn.classList.add('text-slate-200'); btn.classList.remove('text-yellow-400');
                 }
             });
         }
 
         function submitRating() {
-            if (selectedStars === 0) {
-                alert("Mohon berikan bintang terlebih dahulu!");
-                return;
-            }
+            if (selectedStars === 0) return alert("Pilih bintang dulu!");
             const comment = document.getElementById('rating-comment').value.trim();
             const allReports = getSharedReports();
             const idx = allReports.findIndex(r => r.id === ratingTargetId);
-
             if (idx !== -1) {
                 allReports[idx].rating = selectedStars;
                 if (comment) allReports[idx].reviewContent = comment;

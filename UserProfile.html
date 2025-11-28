@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Profil Saya - CleanTrack</title>
+    <title>Dompet & Profil - CleanTrack</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
@@ -21,7 +21,7 @@
                     colors: {
                         "primary": "#2A62C8",
                         "secondary": "#50E3C2",
-                        "background-light": "#f0f4f8",
+                        "background-light": "#f8fafc",
                         "surface": "#ffffff"
                     },
                     fontFamily: {
@@ -37,9 +37,9 @@
     <script src="user-header.js"></script>
 
     <style>
-        /* Custom Scrollbar untuk Desktop */
+        /* Hide Scrollbar */
         .custom-scroll::-webkit-scrollbar {
-            width: 6px;
+            width: 4px;
         }
 
         .custom-scroll::-webkit-scrollbar-track {
@@ -51,169 +51,190 @@
             border-radius: 20px;
         }
 
-        .glass-card {
+        /* MESH GRADIENT CARD (Gaya Kartu Kredit Fisik) */
+        .credit-card-mesh {
+            background-color: #0f172a;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+                0 20px 40px -10px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .credit-card-mesh::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+            animation: shimmer 10s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Glassmorphism Panels */
+        .glass-panel {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* Receipt Style */
+        .receipt-container {
+            background: #fff;
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
         }
     </style>
 </head>
 
-<body class="bg-background-light font-display text-slate-800 antialiased min-h-screen flex flex-col">
+<body
+    class="bg-background-light font-display text-slate-800 antialiased min-h-screen flex flex-col selection:bg-primary/20">
 
     <!-- Header (Sticky dari user-header.js) -->
     <div id="app-header"></div>
 
-    <!-- MAIN CONTAINER -->
-    <!-- Mobile: Flex Column (Stack) & Natural Scroll -->
-    <!-- Desktop: Grid Layout & Fixed Height (Independent Scroll) -->
     <main class="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 
-        <div class="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 lg:h-[calc(100vh-9rem)]">
+        <div class="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:h-[calc(100vh-8rem)]">
 
-            <!-- PANEL KIRI (PROFIL & SALDO) -->
-            <!-- Mobile: Order 1 (Atas). Desktop: Col Span 4, Scrollable if needed -->
-            <div class="lg:col-span-4 flex flex-col gap-6 lg:overflow-y-auto custom-scroll p-1 order-1">
+            <!-- LEFT PANEL: WALLET & PROFILE -->
+            <div class="lg:col-span-5 flex flex-col gap-6 lg:overflow-y-auto custom-scroll p-1 order-1">
 
-                <!-- Kartu Profil Utama -->
-                <div class="glass-card rounded-[2rem] p-8 shadow-xl shadow-blue-900/5 relative overflow-hidden group">
-                    <div
-                        class="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-primary/20 to-secondary/20 -z-10">
+                <!-- 1. DIGITAL CARD (CREDIT CARD STYLE) -->
+                <div
+                    class="credit-card-mesh w-full aspect-[1.586/1] rounded-3xl p-6 sm:p-8 flex flex-col justify-between text-white transform transition-transform hover:scale-[1.02] duration-500">
+
+                    <div class="flex justify-between items-start z-10">
+                        <span class="material-symbols-outlined text-4xl text-white/80">contactless</span>
+                        <p class="font-bold font-mono tracking-widest text-white/50">CleanTrack Card</p>
                     </div>
-                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-blue-400/20 rounded-full blur-3xl"></div>
 
-                    <div class="flex flex-col items-center text-center">
-                        <div class="relative mb-4 group cursor-pointer" onclick="openEditModal()">
-                            <div
-                                class="w-24 h-24 sm:w-28 sm:h-28 rounded-full p-1 bg-white shadow-lg ring-4 ring-white/50 relative z-10">
-                                <img id="profile-avatar" src="" class="w-full h-full rounded-full object-cover">
-                            </div>
-                            <div
-                                class="absolute bottom-0 right-0 bg-slate-900 text-white p-2 rounded-full shadow-lg z-20 hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined text-sm">edit</span>
-                            </div>
+                    <div class="z-10">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-3xl sm:text-5xl font-black tracking-tighter font-mono"
+                                id="wallet-balance">0</span>
+                            <span class="bg-white/20 px-2 py-1 rounded text-xs font-bold backdrop-blur-md">PTS</span>
                         </div>
+                        <p class="text-white/60 text-xs font-mono tracking-widest mb-6">**** **** **** <span
+                                id="card-id">0000</span></p>
+                    </div>
 
-                        <h2 class="text-2xl font-black text-slate-900 tracking-tight" id="profile-name">User</h2>
-                        <span
-                            class="px-3 py-1 mt-1 rounded-full bg-blue-50 text-blue-600 text-xs font-bold border border-blue-100 uppercase tracking-wider">Warga
-                            Aktif</span>
-
-                        <div class="mt-6 w-full space-y-3">
-                            <div class="flex items-center gap-3 p-3 rounded-xl bg-white/60 border border-white">
-                                <div
-                                    class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
-                                    <span class="material-symbols-outlined text-lg">mail</span>
-                                </div>
-                                <div class="text-left overflow-hidden min-w-0">
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase">Email</p>
-                                    <p class="text-sm font-medium truncate" id="profile-email">...</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3 p-3 rounded-xl bg-white/60 border border-white">
-                                <div
-                                    class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
-                                    <span class="material-symbols-outlined text-lg">call</span>
-                                </div>
-                                <div class="text-left overflow-hidden min-w-0">
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase">WhatsApp</p>
-                                    <p class="text-sm font-medium font-mono truncate" id="profile-phone">...</p>
-                                </div>
-                            </div>
+                    <div class="flex justify-between items-end z-10">
+                        <div>
+                            <p class="text-[10px] text-white/50 uppercase font-bold tracking-wider mb-1">Card Holder</p>
+                            <p class="text-sm sm:text-lg font-bold font-mono uppercase tracking-wide truncate max-w-[200px]"
+                                id="card-name">USER NAME</p>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <p class="text-[10px] text-white/50 uppercase font-bold tracking-wider mb-1">Status</p>
+                            <span
+                                class="px-3 py-1 rounded-full bg-green-500/20 border border-green-400/30 text-green-300 text-xs font-bold backdrop-blur-md shadow-[0_0_15px_rgba(74,222,128,0.3)]">ACTIVE</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Kartu Saldo (Wallet Card) -->
-                <div
-                    class="bg-slate-900 rounded-[2rem] p-6 text-white shadow-2xl shadow-slate-900/20 relative overflow-hidden flex-shrink-0">
-                    <div class="absolute top-0 right-0 p-8 opacity-5">
-                        <span class="material-symbols-outlined text-[8rem]">account_balance_wallet</span>
+                <!-- 2. PROFILE MINI PANEL -->
+                <div class="glass-panel p-6 rounded-3xl shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-slate-900">Informasi Akun</h3>
+                        <button onclick="openEditModal()" class="text-xs font-bold text-primary hover:underline">Edit
+                            Profil</button>
                     </div>
-                    <div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/40 to-transparent">
-                    </div>
-
-                    <div class="relative z-10">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Eco-Wallet
-                                </p>
-                                <div class="flex items-baseline gap-1">
-                                    <h3 class="text-4xl font-black font-mono tracking-tighter" id="wallet-balance">0
-                                    </h3>
-                                    <span class="text-sm font-bold text-slate-500">Pts</span>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <img id="profile-avatar" src=""
+                                    class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md">
+                                <div
+                                    class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full">
                                 </div>
                             </div>
-                            <div
-                                class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm">
-                                <span class="material-symbols-outlined text-yellow-400">monetization_on</span>
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold text-slate-900 truncate" id="profile-name">...</p>
+                                <p class="text-xs text-slate-500 truncate" id="profile-email">...</p>
                             </div>
                         </div>
-
-                        <p class="text-slate-400 text-xs mb-4">Tukar poin dengan hadiah menarik.</p>
-
-                        <!-- Scroll to store (Mobile) or Focus (Desktop) -->
-                        <button onclick="scrollToStore()"
-                            class="w-full py-3 bg-primary hover:bg-blue-600 rounded-xl font-bold text-sm shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center justify-center gap-2">
-                            <span>Buka Katalog</span>
-                            <span class="material-symbols-outlined text-lg">arrow_forward</span>
-                        </button>
+                        <div class="h-px bg-slate-200/60"></div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-slate-500 flex items-center gap-2"><span
+                                    class="material-symbols-outlined text-base">call</span> WhatsApp</span>
+                            <span class="font-mono font-bold text-slate-700" id="profile-phone">-</span>
+                        </div>
                     </div>
                 </div>
 
             </div>
 
-            <!-- PANEL KANAN (KATALOG & RIWAYAT) -->
-            <!-- Mobile: Order 2 (Bawah), Natural Height. Desktop: Col Span 8, Internal Scroll -->
-            <div id="right-panel"
-                class="lg:col-span-8 bg-white rounded-[2rem] border border-slate-200 shadow-sm flex flex-col lg:overflow-hidden order-2 min-h-[500px]">
+            <!-- RIGHT PANEL: STORE & HISTORY TABS -->
+            <div
+                class="lg:col-span-7 flex flex-col bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 overflow-hidden order-2 h-full border border-white">
 
-                <!-- STICKY TABS HEADER -->
-                <!-- Mobile: Sticky top-16 (Below Navbar). Desktop: Sticky top-0 (Inside Container). -->
-                <div
-                    class="sticky top-16 sm:top-20 lg:top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 flex shrink-0">
+                <!-- Tab Headers -->
+                <div class="flex border-b border-slate-100">
                     <button onclick="switchTab('store')" id="tab-btn-store"
-                        class="flex-1 py-4 text-sm font-bold text-primary border-b-2 border-primary bg-blue-50/50 transition-all flex justify-center items-center gap-2 hover:bg-blue-50">
-                        <span class="material-symbols-outlined text-lg">storefront</span> <span
-                            class="hidden sm:inline">Katalog</span> Hadiah
+                        class="flex-1 py-5 text-sm font-bold text-slate-900 border-b-4 border-slate-900 bg-slate-50 transition-colors flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">storefront</span> Katalog Hadiah
                     </button>
                     <button onclick="switchTab('history')" id="tab-btn-history"
-                        class="flex-1 py-4 text-sm font-medium text-slate-500 hover:text-slate-800 transition-all flex justify-center items-center gap-2 hover:bg-slate-50">
-                        <span class="material-symbols-outlined text-lg">receipt_long</span> Riwayat <span
-                            class="hidden sm:inline">Transaksi</span>
+                        class="flex-1 py-5 text-sm font-medium text-slate-400 border-b-4 border-transparent hover:text-slate-600 transition-colors flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">receipt_long</span> Riwayat Transaksi
                     </button>
                 </div>
 
-                <!-- Scrollable Content Area -->
-                <div class="flex-1 lg:overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8">
+                <!-- Scrollable Content -->
+                <div class="flex-1 overflow-y-auto custom-scroll bg-slate-50/50 p-6 relative">
 
-                    <!-- TAB STORE -->
+                    <!-- 1. KATALOG HADIAH (Marketplace Grid) -->
                     <div id="tab-content-store" class="animate-fade-in">
-                        <div id="rewards-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                            <!-- JS Inject Here -->
+                        <!-- Responsive Grid: 2 Kolom di Mobile, 3 di Tablet/Desktop -->
+                        <div id="rewards-list" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <!-- JS Injected Here -->
                         </div>
+
                         <div id="empty-store"
-                            class="hidden flex flex-col items-center justify-center py-12 text-center">
-                            <div
-                                class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <span class="material-symbols-outlined text-3xl text-slate-300">inventory_2</span>
-                            </div>
-                            <p class="text-slate-800 font-bold text-sm">Katalog Kosong</p>
-                            <p class="text-xs text-slate-500 mt-1">Belum ada item hadiah yang tersedia saat ini.</p>
+                            class="hidden flex flex-col items-center justify-center py-20 text-center opacity-60">
+                            <span class="material-symbols-outlined text-6xl text-slate-300 mb-2">inventory_2</span>
+                            <p class="font-bold text-slate-400">Katalog Kosong</p>
                         </div>
                     </div>
 
-                    <!-- TAB HISTORY -->
+                    <!-- 2. RIWAYAT (Digital Receipt) -->
                     <div id="tab-content-history" class="hidden animate-fade-in">
-                        <div id="empty-history" class="hidden py-12 text-center">
-                            <div
-                                class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <span class="material-symbols-outlined text-3xl text-slate-300">receipt_long</span>
+                        <div class="receipt-container rounded-2xl border border-slate-200 p-6 shadow-sm min-h-[400px]">
+                            <div class="text-center mb-8 border-b-2 border-dashed border-slate-300 pb-6">
+                                <h4 class="font-black text-xl text-slate-900 tracking-tight mb-1">CLEANTRACK RECEIPT
+                                </h4>
+                                <p class="text-xs font-mono text-slate-400 uppercase tracking-widest">Official Digital
+                                    Record</p>
                             </div>
-                            <p class="text-slate-800 font-bold text-sm">Belum ada transaksi</p>
-                        </div>
-                        <div class="space-y-3" id="history-list">
-                            <!-- JS Inject Here -->
+
+                            <div id="history-list" class="space-y-6">
+                                <!-- JS Injected Here -->
+                            </div>
+
+                            <div id="empty-history" class="hidden text-center py-12">
+                                <p class="font-mono text-slate-400 text-sm">-- BELUM ADA TRANSAKSI --</p>
+                            </div>
+
+                            <div class="mt-8 pt-6 border-t-2 border-dashed border-slate-300 text-center">
+                                <p class="font-mono text-[10px] text-slate-400">TERIMA KASIH ATAS KONTRIBUSI ANDA</p>
+                            </div>
                         </div>
                     </div>
 
@@ -226,71 +247,65 @@
     <!-- MODAL EDIT PROFIL -->
     <div id="edit-modal"
         class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div class="bg-white rounded-3xl w-full max-w-sm p-6 relative transform scale-95 opacity-0 transition-all duration-300 shadow-2xl"
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 transform scale-95 opacity-0 transition-all duration-300 shadow-2xl relative"
             id="edit-content">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-lg font-black text-slate-900">Edit Profil</h3>
                 <button onclick="closeEditModal()"
-                    class="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-500">
-                    <span class="material-symbols-outlined text-sm">close</span>
+                    class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors">
+                    <span class="material-symbols-outlined text-lg">close</span>
                 </button>
             </div>
-
-            <form class="space-y-4" onsubmit="return false;">
+            <form class="space-y-4">
                 <div>
-                    <label
-                        class="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-wider">Avatar</label>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Pilih Avatar</label>
                     <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide" id="avatar-selector"></div>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Nama</label>
+                <div class="space-y-3">
                     <input type="text" id="edit-name"
-                        class="w-full rounded-xl border-slate-200 px-3 py-2 text-sm focus:ring-primary focus:border-primary font-bold">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp</label>
+                        class="w-full rounded-xl border-slate-200 px-4 py-3 text-sm font-bold placeholder:font-normal focus:ring-primary focus:border-primary"
+                        placeholder="Nama Lengkap">
                     <input type="tel" id="edit-phone"
-                        class="w-full rounded-xl border-slate-200 px-3 py-2 text-sm focus:ring-primary focus:border-primary">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Email</label>
+                        class="w-full rounded-xl border-slate-200 px-4 py-3 text-sm font-bold placeholder:font-normal focus:ring-primary focus:border-primary"
+                        placeholder="Nomor WhatsApp">
                     <input type="email" id="edit-email"
-                        class="w-full rounded-xl border-slate-200 px-3 py-2 text-sm focus:ring-primary focus:border-primary">
+                        class="w-full rounded-xl border-slate-200 px-4 py-3 text-sm font-bold placeholder:font-normal focus:ring-primary focus:border-primary"
+                        placeholder="Email">
                 </div>
                 <button type="button" onclick="saveProfileData()"
-                    class="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-primary transition-all mt-2">Simpan</button>
+                    class="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl hover:bg-primary transition-all mt-2 shadow-lg active:scale-95">Simpan
+                    Perubahan</button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL KONFIRMASI REDEEM -->
+    <!-- MODAL CONFIRM REDEEM -->
     <div id="confirm-modal"
         class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div class="bg-white rounded-3xl w-full max-w-xs p-6 relative transform scale-95 opacity-0 transition-all duration-300 shadow-2xl"
+        <div class="bg-white rounded-3xl w-full max-w-xs p-6 transform scale-95 opacity-0 transition-all duration-300 shadow-2xl text-center"
             id="confirm-content">
-            <h3 class="text-lg font-black text-slate-900 mb-4">Tukar Poin?</h3>
-            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4">
-                <p class="text-sm font-bold text-slate-900" id="confirm-item-name">...</p>
-                <p class="text-xs text-slate-500 font-mono mt-0.5"><span id="confirm-cost"
-                        class="font-bold text-blue-600">0</span> Poin akan dipotong.</p>
+            <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
+                <span class="material-symbols-outlined text-3xl">shopping_cart_checkout</span>
             </div>
-            <div class="mb-4">
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-1" id="input-label">Nomor
-                    Tujuan</label>
-                <input type="text" id="redeem-input"
-                    class="w-full rounded-xl border-slate-300 text-sm font-mono px-3 py-2 focus:ring-primary"
-                    placeholder="0812...">
-            </div>
+            <h3 class="text-lg font-black text-slate-900 mb-2">Tukar Poin?</h3>
+            <p class="text-sm text-slate-500 mb-4">Anda akan menukar <span class="font-bold text-slate-900"
+                    id="confirm-cost">0</span> Poin untuk <span class="font-bold text-slate-900"
+                    id="confirm-item-name">Item</span>.</p>
+
+            <input type="text" id="redeem-input"
+                class="w-full rounded-xl border-slate-200 text-center font-bold mb-4 focus:ring-primary"
+                placeholder="Masukkan Nomor Tujuan">
+
             <div class="flex gap-2">
                 <button onclick="closeConfirmModal()"
-                    class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200">Batal</button>
+                    class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold text-xs hover:bg-slate-200">Batal</button>
                 <button onclick="processRedeem()" id="btn-process"
-                    class="flex-1 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-primary">Proses</button>
+                    class="flex-1 py-3 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-primary shadow-lg">Konfirmasi</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL SUKSES (STRUK) -->
+    <!-- MODAL SUCCESS RECEIPT -->
     <div id="success-modal"
         class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md">
         <div class="bg-white rounded-2xl w-full max-w-xs relative transform scale-95 opacity-0 transition-all duration-300 shadow-2xl overflow-hidden"
@@ -302,21 +317,25 @@
                 </div>
                 <h3 class="text-lg font-black uppercase tracking-widest">Berhasil</h3>
                 <p class="text-xs text-green-100 opacity-90" id="receipt-date">...</p>
-                <div class="absolute bottom-[-6px] left-0 right-0 h-3 bg-transparent"
-                    style="background: radial-gradient(circle, transparent 50%, white 50%) 0 -6px / 12px 12px repeat-x;">
+                <!-- Zigzag Border CSS -->
+                <div class="absolute bottom-[-6px] left-0 right-0 h-3"
+                    style="background: linear-gradient(45deg, transparent 33.333%, #ffffff 33.333%, #ffffff 66.667%, transparent 66.667%), linear-gradient(-45deg, transparent 33.333%, #ffffff 33.333%, #ffffff 66.667%, transparent 66.667%); background-size: 12px 24px; background-position: 0 -12px;">
                 </div>
             </div>
-            <div class="p-6 pt-8 text-center">
+            <div class="p-6 pt-8 text-center bg-white">
                 <h4 class="text-lg font-black text-slate-900 leading-tight mb-4" id="receipt-item">...</h4>
-                <div class="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-3 mb-6 cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all group"
+                <div class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 mb-6 cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-colors group"
                     onclick="copyCode()">
                     <p class="text-[10px] text-slate-400 font-bold uppercase mb-1 tracking-widest">KODE VOUCHER</p>
                     <p class="text-xl font-mono font-black text-slate-900 tracking-wider break-all group-hover:text-blue-600"
                         id="receipt-code">...</p>
-                    <p class="text-[9px] text-primary font-bold mt-1">Ketuk untuk Salin</p>
+                    <p
+                        class="text-[9px] text-primary font-bold mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        KLIK UNTUK SALIN</p>
                 </div>
                 <button onclick="window.location.reload()"
-                    class="w-full py-3 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 text-sm">Tutup</button>
+                    class="w-full py-3.5 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 text-sm shadow-lg">Tutup
+                    Struk</button>
             </div>
         </div>
     </div>
@@ -348,11 +367,16 @@
             const users = getSharedUsers();
             freshUser = users.find(u => u.id === currentUser.id) || currentUser;
 
+            // Update Card
+            document.getElementById('wallet-balance').innerText = balance;
+            document.getElementById('card-name').innerText = freshUser.name;
+            document.getElementById('card-id').innerText = freshUser.id.split('-')[1] || '0000';
+
+            // Update Profile Info
             document.getElementById('profile-name').innerText = freshUser.name;
             document.getElementById('profile-email').innerText = freshUser.email;
             document.getElementById('profile-phone').innerText = freshUser.phone || '-';
             document.getElementById('profile-avatar').src = freshUser.avatar;
-            document.getElementById('wallet-balance').innerText = balance;
 
             loadRewards();
             const txs = getTransactionHistory();
@@ -376,28 +400,34 @@
             empty.classList.add('hidden');
 
             rewards.forEach(item => {
-                let theme = { bg: 'bg-blue-50', text: 'text-blue-600', icon: 'local_offer' };
-                if (item.category === 'PLN') theme = { bg: 'bg-yellow-50', text: 'text-yellow-600', icon: 'bolt' };
-                else if (item.category === 'Pulsa') theme = { bg: 'bg-red-50', text: 'text-red-600', icon: 'phonelink_ring' };
-                else if (item.category === 'E-Wallet') theme = { bg: 'bg-green-50', text: 'text-green-600', icon: 'account_balance_wallet' };
+                let badgeColor = 'bg-blue-100 text-blue-700';
+                if (item.category === 'PLN') badgeColor = 'bg-yellow-100 text-yellow-700';
+                if (item.category === 'Pulsa') badgeColor = 'bg-red-100 text-red-700';
+
+                // Gunakan gambar dummy jika tidak ada gambar
+                const imgUrl = item.image || `https://ui-avatars.com/api/?name=${item.name}&background=random&size=128`;
 
                 const html = `
-                    <div class="group border border-slate-100 rounded-2xl p-4 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all bg-white relative overflow-hidden flex flex-col h-full">
-                        <div class="absolute top-0 right-0 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">${item.cost} Pts</div>
-                        
-                        <div class="h-28 ${theme.bg} rounded-xl mb-4 flex items-center justify-center ${theme.text} group-hover:scale-105 transition-transform shrink-0">
-                            <span class="material-symbols-outlined text-5xl">${theme.icon}</span>
+                    <div class="bg-white rounded-2xl p-3 border border-slate-100 hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1 transition-all duration-300 flex flex-col group">
+                        <div class="relative h-32 rounded-xl bg-slate-100 overflow-hidden mb-3">
+                            <img src="${imgUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <span class="absolute top-2 left-2 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${badgeColor} shadow-sm bg-opacity-90 backdrop-blur-sm">
+                                ${item.category}
+                            </span>
                         </div>
                         
-                        <div class="flex-1">
-                            <h4 class="font-bold text-slate-900 line-clamp-1">${item.name}</h4>
-                            <p class="text-xs text-slate-500 mb-4 line-clamp-2">${item.description || 'Tukarkan poin Anda dengan item ini.'}</p>
+                        <div class="flex-1 flex flex-col">
+                            <h4 class="font-bold text-slate-900 text-sm leading-tight mb-1 line-clamp-2">${item.name}</h4>
+                            <p class="text-[10px] text-slate-400 mb-3 line-clamp-2">${item.description || 'Redeem reward ini sekarang.'}</p>
+                            
+                            <div class="mt-auto flex items-center justify-between">
+                                <span class="font-mono font-bold text-slate-900 text-sm">${item.cost} <span class="text-[10px] text-slate-400">Pts</span></span>
+                                <button onclick="initiateRedeem(${item.cost}, '${item.name}', '${item.category}')" 
+                                    class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-primary shadow-lg shadow-slate-900/20 active:scale-90 transition-all">
+                                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                </button>
+                            </div>
                         </div>
-                        
-                        <button onclick="initiateRedeem(${item.cost}, '${item.name}', '${item.category}')" 
-                            class="w-full py-2.5 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-primary transition-colors mt-auto">
-                            Tukar
-                        </button>
                     </div>
                 `;
                 container.insertAdjacentHTML('beforeend', html);
@@ -417,29 +447,23 @@
 
             transactions.forEach(tx => {
                 const isCredit = tx.type === 'CREDIT';
-                const icon = isCredit ? 'add_circle' : 'remove_circle';
-                const colorClass = isCredit ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50';
                 const sign = isCredit ? '+' : '-';
+                const color = isCredit ? 'text-green-600' : 'text-red-600';
 
-                const item = `
-                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full ${colorClass} flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-xl">${icon}</span>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-sm font-bold text-slate-800 truncate">${tx.description}</p>
-                                <p class="text-xs text-slate-400 font-mono">${tx.date.split(',')[0]}</p>
-                            </div>
+                const html = `
+                    <div class="flex justify-between items-start font-mono text-xs border-b border-dashed border-slate-200 pb-3 last:border-none">
+                        <div>
+                            <p class="font-bold text-slate-800 uppercase">${tx.description}</p>
+                            <p class="text-slate-400 mt-0.5">${tx.date}</p>
                         </div>
-                        <span class="text-sm font-black font-mono ${isCredit ? 'text-green-600' : 'text-red-600'} ml-2">${sign}${tx.amount}</span>
+                        <p class="font-bold ${color} text-sm">${sign}${tx.amount} PTS</p>
                     </div>
                 `;
-                container.insertAdjacentHTML('beforeend', item);
+                container.insertAdjacentHTML('beforeend', html);
             });
         }
 
-        // --- TABS & SCROLL HELPER ---
+        // --- TABS ---
         function switchTab(tab) {
             const store = document.getElementById('tab-content-store');
             const history = document.getElementById('tab-content-history');
@@ -449,38 +473,16 @@
             if (tab === 'store') {
                 store.classList.remove('hidden');
                 history.classList.add('hidden');
-                btnStore.classList.add('text-primary', 'border-b-2', 'border-primary', 'bg-blue-50/50');
-                btnStore.classList.remove('text-slate-500');
-                btnHistory.classList.remove('text-primary', 'border-b-2', 'border-primary', 'bg-blue-50/50');
-                btnHistory.classList.add('text-slate-500');
+
+                btnStore.className = "flex-1 py-5 text-sm font-bold text-slate-900 border-b-4 border-slate-900 bg-slate-50 transition-colors flex items-center justify-center gap-2";
+                btnHistory.className = "flex-1 py-5 text-sm font-medium text-slate-400 border-b-4 border-transparent hover:text-slate-600 transition-colors flex items-center justify-center gap-2";
             } else {
                 store.classList.add('hidden');
                 history.classList.remove('hidden');
-                btnHistory.classList.add('text-primary', 'border-b-2', 'border-primary', 'bg-blue-50/50');
-                btnHistory.classList.remove('text-slate-500');
-                btnStore.classList.remove('text-primary', 'border-b-2', 'border-primary', 'bg-blue-50/50');
-                btnStore.classList.add('text-slate-500');
-            }
-        }
 
-        function scrollToStore() {
-            // Function to scroll to the store section
-            // On mobile: scroll window. On desktop: scroll inner container.
-            const rightPanel = document.getElementById('right-panel');
-
-            // Check if we are in mobile/stack mode or desktop/grid mode
-            // Simple check: is window width >= 1024px?
-            if (window.innerWidth >= 1024) {
-                // Desktop: Scroll internal panel
-                const contentArea = rightPanel.querySelector('.custom-scroll');
-                if (contentArea) contentArea.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-                // Mobile: Scroll window to Right Panel
-                const offset = 80; // Offset for sticky header + spacing
-                const top = rightPanel.getBoundingClientRect().top + window.scrollY - offset;
-                window.scrollTo({ top: top, behavior: 'smooth' });
+                btnHistory.className = "flex-1 py-5 text-sm font-bold text-slate-900 border-b-4 border-slate-900 bg-slate-50 transition-colors flex items-center justify-center gap-2";
+                btnStore.className = "flex-1 py-5 text-sm font-medium text-slate-400 border-b-4 border-transparent hover:text-slate-600 transition-colors flex items-center justify-center gap-2";
             }
-            switchTab('store');
         }
 
         // --- EDIT PROFILE ---
@@ -543,7 +545,7 @@
             document.getElementById('confirm-item-name').innerText = name;
             document.getElementById('confirm-cost').innerText = cost;
             document.getElementById('redeem-input').value = freshUser.phone || "";
-            document.getElementById('input-label').innerText = type === 'PLN' ? "ID Pelanggan" : "Nomor WhatsApp";
+            document.getElementById('redeem-input').placeholder = type === 'PLN' ? "ID Pelanggan" : "Nomor WhatsApp";
             showModal('confirm-modal', 'confirm-content');
         }
 
@@ -556,13 +558,13 @@
             btn.disabled = true;
 
             setTimeout(() => {
-                const success = updateUserPoints(currentUser.id, -selectedItem.cost, `Tukar: ${selectedItem.name}`);
+                const success = updateUserPoints(currentUser.id, -selectedItem.cost, `REDEEM: ${selectedItem.name}`);
                 if (success) {
                     hideModal('confirm-modal', 'confirm-content');
                     const code = generateRedeemCode(selectedItem.type);
                     showSuccessModal(code);
                 }
-                btn.innerHTML = "Proses";
+                btn.innerHTML = "Konfirmasi";
                 btn.disabled = false;
             }, 1000);
         }
@@ -581,7 +583,7 @@
 
         function closeConfirmModal() { hideModal('confirm-modal', 'confirm-content'); }
 
-        // --- MODAL UTILS ---
+        // --- MODAL HELPERS ---
         function showModal(modalId, contentId) {
             const modal = document.getElementById(modalId);
             const content = document.getElementById(contentId);
@@ -599,7 +601,6 @@
             content.classList.add('scale-95', 'opacity-0');
             setTimeout(() => modal.classList.add('hidden'), 300);
         }
-
     </script>
 </body>
 
